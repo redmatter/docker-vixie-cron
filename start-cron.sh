@@ -19,6 +19,8 @@ cron_monitored_files() {
         -mindepth 1 -not -name .placeholder
 }
 
+[ "$DEBUG" = 1 ] && set -x;
+
 : ${RUN_USER:=root}
 # make sure RUN_USER exists and is setup correctly
 if ! cron-user check "$RUN_USER"; then
