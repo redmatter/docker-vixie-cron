@@ -19,11 +19,9 @@ cron_monitored_files() {
         -mindepth 1 -not -name .placeholder
 }
 
+: ${RUN_USER:=root}
 # make sure RUN_USER exists and is setup correctly
-if [ -z "$RUN_USER" ]; then
-    echo "ERROR: RUN_USER not defined"
-    exit 1;
-elif ! cron-user check "$RUN_USER"; then
+if ! cron-user check "$RUN_USER"; then
     exit 1;
 fi
 

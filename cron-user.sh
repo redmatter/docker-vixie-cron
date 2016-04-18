@@ -12,6 +12,9 @@ show_usage() {
 check_user() {
     local _USER="$1"; shift
 
+    # root has all permissions required
+    [ "$_USER" = root ] && return 0;
+
     if ! id "$_USER" >/dev/null 2>&1; then
         echo "ERROR: User '$_USER' not found"
         return 1;
@@ -28,6 +31,9 @@ check_user() {
 add_user() {
     local _USER="$1"; shift
     local _GROUP="$1"; shift
+
+    # no need to modify root (OR add root; that would be awkward!)
+    [ "$_USER" = root ] && return 0;
 
     : ${_GROUP:=$_USER}
 
