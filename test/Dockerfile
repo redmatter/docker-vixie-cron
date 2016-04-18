@@ -1,4 +1,4 @@
-FROM cron
+FROM redmatter/cron
 
 ENV RUN_USER=testuser
 RUN cron-user add -u ${RUN_USER}
