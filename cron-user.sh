@@ -47,10 +47,10 @@ add_user() {
         # not in crontab group, then add modify user
         (echo "$_groups" | grep -q " crontab ") || usermod -aG crontab ${_USER};
         # sudo would fail for nologin users; set a usable shell for the user
-        # _shell=$(getent passwd ${_USER} | cut -d: -f7)
-        # if [ "$_shell" = /usr/sbin/nologin ] || [ "$_shell" = /bin/false ]; then
-        #     chsh -s /bin/sh ${_USER}
-        # fi
+        _shell=$(getent passwd ${_USER} | cut -d: -f7)
+        if [ "$_shell" = /usr/sbin/nologin ] || [ "$_shell" = /bin/false ]; then
+            chsh -s /bin/sh ${_USER}
+        fi
     else
         # if the _USER does not already exist, create afresh
         groupadd ${_GROUP} &&
