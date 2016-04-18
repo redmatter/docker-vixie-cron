@@ -17,7 +17,7 @@ RUN ( \
 
 		# update and upgrade for vulnerability fixes etc.
 		apt-get update; \
-# apt-get upgrade -y; \
+        apt-get upgrade -y; \
 		apt-get install --no-install-recommends -y $BUILD_DEPS $APP_DEPS ; \
 
 		# remove the ones that come with the package; no need for that
