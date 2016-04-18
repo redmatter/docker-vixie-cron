@@ -29,7 +29,6 @@ check_user() {
 }
 
 add_user() {
-set -x
     local _USER="$1"; shift
     local _GROUP="$1"; shift
 
@@ -47,11 +46,11 @@ set -x
         (echo "$_groups" | grep -q " ${_GROUP} ") || usermod -aG ${_GROUP} ${_USER};
         # not in crontab group, then add modify user
         (echo "$_groups" | grep -q " crontab ") || usermod -aG crontab ${_USER};
-# FIXME set a usable shell for the user
-        _shell=$(getent passwd ${_USER} | cut -d: -f7)
-        if [ "$_shell" = /usr/sbin/nologin ] || [ "$_shell" = /bin/false ]; then
-            chsh -s /bin/sh ${_USER}
-        fi
+        # sudo would fail for nologin users; set a usable shell for the user
+        # _shell=$(getent passwd ${_USER} | cut -d: -f7)
+        # if [ "$_shell" = /usr/sbin/nologin ] || [ "$_shell" = /bin/false ]; then
+        #     chsh -s /bin/sh ${_USER}
+        # fi
     else
         # if the _USER does not already exist, create afresh
         groupadd ${_GROUP} &&
@@ -59,11 +58,10 @@ set -x
     fi;
 
     # give sudo permission for the user on cron start script
-    local sudoer_file=/etc/sudoers.d/cron_${_USER};
+    local sudoer_file=/etc/sudoers.d/cron.${_USER};
     echo "${_USER} ALL=(ALL) NOPASSWD:SETENV: /start-cron.sh" > ${sudoer_file};
     chown root:root ${sudoer_file};
     chmod 440 ${sudoer_file};
-set +x
 }
 
 if [ "$(whoami)" != "root" ]; then
