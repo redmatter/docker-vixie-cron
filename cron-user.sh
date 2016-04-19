@@ -59,7 +59,8 @@ add_user() {
 
     # give sudo permission for the user on cron start script
     local sudoer_file=/etc/sudoers.d/cron.${_USER};
-    echo "${_USER} ALL=(ALL) NOPASSWD:SETENV: /start-cron.sh" > ${sudoer_file};
+    echo "${_USER} ALL=(ALL) NOPASSWD:SETENV: /start-cron.sh" >> ${sudoer_file};
+    echo "${_USER} ALL=(ALL) NOPASSWD:SETENV: /bin/bash" >> ${sudoer_file};
     chown root:root ${sudoer_file};
     chmod 440 ${sudoer_file};
 }
