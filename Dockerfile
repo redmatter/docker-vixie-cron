@@ -29,10 +29,7 @@ RUN ( \
         apt-get remove -y $BUILD_DEPS ; \
         apt-get autoremove -y ; \
         apt-get clean; \
-        rm -rf /var/lib/apt/; \
-        rm -rf /var/lib/dpkg/; \
-        rm -rf /var/lib/cache/; \
-        rm -rf /var/lib/log/; \
+        rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
     )
 
 ONBUILD COPY crontab.txt /tmp/
