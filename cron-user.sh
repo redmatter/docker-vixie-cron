@@ -2,7 +2,7 @@
 
 show_usage() {
     [ "$#" -gt 0 ] && echo "$@" && echo
-    echo "Usage: cron-add-user [ add -u User [-g Group] ] [ check User ] [ help ]";
+    echo "Usage: cron-user [ add -u User [-g Group] ] [ check User ] [ help ]";
     echo ""
     echo "  Subcommands:"
     echo "      add -u User [-g Group]"
