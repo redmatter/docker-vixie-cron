@@ -1,10 +1,15 @@
 # docker-vixie-cron
 
-Docker image to run scheduled tasks using the classic vixie-cron (debian flavour).
+Source of docker image [`redmatter/cron`](https://hub.docker.com/r/redmatter/cron/) designed to run scheduled tasks
+using the classic vixie-cron (debian flavour).
 
 ## How to use it
 
-Have a look inside the [`test`](test) folder for an example.
+The simplest way to make use of this image is to create a new image based on `redmatter/cron`, as shown in the example
+inside the [`test`](test) folder.
+
+You can either let the container run scheduled tasks as `root` user or you can add / modify another user. You can use
+`cron-user` script within the base image to add this user and the specify the username in RUN_USER environment variable.
 
 ### Variables:
 

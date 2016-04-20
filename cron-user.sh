@@ -1,12 +1,22 @@
 #!/bin/sh
 
 show_usage() {
+    [ "$#" -gt 0 ] && echo "$@" && echo
     echo "Usage: cron-add-user [ add -u User [-g Group] ] [ check User ] [ help ]";
     echo ""
-    echo "  add -u User [-g Group]"
-    echo "    If no Group is specified, a group with the same name"
-    echo "    as the User is used."
-    exit 0;
+    echo "  Subcommands:"
+    echo "      add -u User [-g Group]"
+    echo "          Add or modify a user to make the user to part of 'crontab' group. If no Group is specified, a group"
+    echo "          with the same name as the User is used. The user is also setup to be a sudoer to be able to start"
+    echo "          the cron daemon, assuming the specified user will be used in the USER directive in Dockerfile. If"
+    echo "          the specified user is root, no changes are made."
+    echo "      check User"
+    echo "          Check the specified user to be part of 'crontab' group."
+    echo "      help"
+    echo "          This help message."
+
+    [ "$#" -eq 0 ];
+    exit;
 }
 
 check_user() {
@@ -37,7 +47,7 @@ add_user() {
 
     : ${_GROUP:=$_USER}
 
-    # We need to create the user and group that is set to be used used, in this container
+    # We need to create the user and group that is set to be used, in this container
     # _USER is made sure to be part of groups _GROUP and crontab
     if id -u ${_USER} >/dev/null 2>&1; then
         # get _USER's group(s)
@@ -66,10 +76,12 @@ add_user() {
 }
 
 if [ "$(whoami)" != "root" ]; then
-    echo "ERROR: cron-add-user should be run as root."
-    echo "    Within a Dockerfile, make sure that the USER directive"
-    echo "    is used after any RUN directive that uses cron-add-user."
-    exit 1;
+    show_usage $(cat <<MSG
+    ERROR: 'cron-user add' should be run as root.\n
+        Within a Dockerfile, make sure that the USER directive is not used before \n
+        any RUN directive that invokes 'cron-user add'.
+MSG
+)
 fi
 
 cmd="$1"; shift
