@@ -6,7 +6,7 @@ show_usage() {
     echo ""
     echo "  Subcommands:"
     echo "      add -u User [-g Group]"
-    echo "          Add or modify a user to make the user to part of 'crontab' group. If no Group is specified, a group"
+    echo "          Add or modify a user to make the user part of 'crontab' group. If no Group is specified, a group"
     echo "          with the same name as the User is used. The user is also setup to be a sudoer to be able to start"
     echo "          the cron daemon, assuming the specified user will be used in the USER directive in Dockerfile. If"
     echo "          the specified user is root, no changes are made."
