@@ -15,7 +15,7 @@ RUN ( \
         # so that each command can be seen clearly in the build output
         set -e -x; \
 
-        # update and upgrade for vulnerability fixes etc.
+        # update to pull package list from apt sources
         apt-get update; \
         apt-get install --no-install-recommends -y $BUILD_DEPS $APP_DEPS ; \
 
