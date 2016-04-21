@@ -32,7 +32,8 @@ RUN ( \
         rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
     )
 
-ONBUILD COPY crontab.txt /tmp/
+# crontab.txt is consumed by the cron daemon's startup script (see start-cron.sh)
+ONBUILD COPY crontab.txt /
 
 ENTRYPOINT ["sudo", "-E", "/start-cron.sh"]
 

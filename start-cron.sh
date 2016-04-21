@@ -28,7 +28,7 @@ if ! cron-user check "$RUN_USER"; then
 fi
 
 # setup crontab
-/usr/bin/crontab -u ${RUN_USER} /tmp/crontab.txt;
+/usr/bin/crontab -u ${RUN_USER} /crontab.txt;
 
 # setup file permissions expected by crond
 chmod go-rwx /var/spool/cron/crontabs/${RUN_USER};
