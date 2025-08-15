@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 stop_cron_daemon() {
     local cron_pid="$1";
@@ -21,18 +21,18 @@ cron_monitored_files() {
 
 [ "$DEBUG" = 1 ] && set -x;
 
-: ${RUN_USER:=root}
+: "${RUN_USER:=root}"
 # make sure RUN_USER exists and is setup correctly
 if ! cron-user check "$RUN_USER"; then
     exit 1;
 fi
 
 # setup crontab
-/usr/bin/crontab -u ${RUN_USER} /crontab.txt;
+/usr/bin/crontab -u "${RUN_USER}" /crontab.txt;
 
 # setup file permissions expected by crond
-chmod go-rwx /var/spool/cron/crontabs/${RUN_USER};
-chown ${RUN_USER}:crontab /var/spool/cron/crontabs/${RUN_USER};
+chmod go-rwx "/var/spool/cron/crontabs/${RUN_USER}";
+chown "${RUN_USER}:crontab" "/var/spool/cron/crontabs/${RUN_USER}";
 
 # capture environment variables which can be used in scripts
 for var in $PRESERVE_ENV_VARS; do
@@ -44,14 +44,18 @@ done > /etc/environment
 # with vixie cron
 (
     sleep 5;
-    touch $(cron_monitored_files)
+    while read -r f; do
+        touch "$f";
+    done < <(cron_monitored_files)
 )&
+
+# Setup a trap to kill the background process
+trap 'stop_cron_daemon $cron_pid' INT TERM EXIT
 
 # start cron in foreground mode and background it using
 # shell semantics so that the PID can be captured
 /usr/sbin/cron -f -L15 &
+# capture the PID of the background process
 cron_pid=$!
-
-trap "stop_cron_daemon $cron_pid" INT TERM EXIT
-
+# wait for the background process to finish
 wait $cron_pid
