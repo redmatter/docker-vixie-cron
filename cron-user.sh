@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 show_usage() {
     [ "$#" -gt 0 ] && echo "$@" && echo
@@ -30,7 +30,7 @@ check_user() {
         return 1;
     fi
 
-    if ! echo " $(id -nG ${_USER}) " | grep -q " crontab "; then
+    if ! echo " $(id -nG "${_USER}") " | grep -q " crontab "; then
         echo "ERROR: User '$_USER' not in 'crontab' group"
         return 1;
     fi
@@ -45,43 +45,43 @@ add_user() {
     # no need to modify root (OR add root; that would be awkward!)
     [ "$_USER" = root ] && return 0;
 
-    : ${_GROUP:=$_USER}
+    : "${_GROUP:=$_USER}"
 
     # We need to create the user and group that is set to be used, in this container
     # _USER is made sure to be part of groups _GROUP and crontab
-    if id -u ${_USER} >/dev/null 2>&1; then
+    if id -u "${_USER}" >/dev/null 2>&1; then
         # get _USER's group(s)
-        _groups=" $(id -nG ${_USER}) ";
+        _groups=" $(id -nG "${_USER}") ";
         # not in _GROUP, then add modify user
-        (echo "$_groups" | grep -q " ${_GROUP} ") || usermod -aG ${_GROUP} ${_USER};
+        (echo "$_groups" | grep -q " ${_GROUP} ") || usermod -aG "${_GROUP}" "${_USER}";
         # not in crontab group, then add modify user
-        (echo "$_groups" | grep -q " crontab ") || usermod -aG crontab ${_USER};
+        (echo "$_groups" | grep -q " crontab ") || usermod -aG crontab "${_USER}";
         # sudo would fail for nologin users; set a usable shell for the user
-        _shell=$(getent passwd ${_USER} | cut -d: -f7)
+        _shell=$(getent passwd "${_USER}" | cut -d: -f7)
         if [ "$_shell" = /usr/sbin/nologin ] || [ "$_shell" = /bin/false ]; then
-            chsh -s /bin/sh ${_USER}
+            chsh -s /bin/sh "${_USER}"
         fi
     else
         # if the _USER does not already exist, create afresh
-        groupadd ${_GROUP} &&
-        useradd -mrg ${_GROUP} -G crontab ${_USER};
+        groupadd "${_GROUP}" &&
+        useradd -mrg "${_GROUP}" -G crontab "${_USER}";
     fi;
 
     # give sudo permission for the user on cron start script
     local sudoer_file=/etc/sudoers.d/cron_${_USER};
-    echo "${_USER} ALL=(ALL) NOPASSWD:SETENV: /start-cron.sh" >> ${sudoer_file};
-    echo "${_USER} ALL=(ALL) NOPASSWD:SETENV: /bin/bash" >> ${sudoer_file};
-    chown root:root ${sudoer_file};
-    chmod 440 ${sudoer_file};
+    echo "${_USER} ALL=(ALL) NOPASSWD:SETENV: /start-cron.sh" >> "${sudoer_file}";
+    echo "${_USER} ALL=(ALL) NOPASSWD:SETENV: /bin/bash" >> "${sudoer_file}";
+    chown root:root "${sudoer_file}";
+    chmod 440 "${sudoer_file}";
 }
 
 if [ "$(whoami)" != "root" ]; then
-    show_usage $(cat <<MSG
+    show_usage "$(cat <<MSG
     ERROR: 'cron-user add' should be run as root.\n
         Within a Dockerfile, make sure that the USER directive is not used before \n
         any RUN directive that invokes 'cron-user add'.
 MSG
-)
+)"
 fi
 
 cmd="$1"; shift
@@ -104,7 +104,7 @@ elif [ "$cmd" = "add" ]; then
                 shift; _GROUP="$1"; shift;
                 ;;
             *)
-                echo "Unknown options $@";
+                echo "Unknown options $*";
                 show_usage;
                 ;;
         esac
