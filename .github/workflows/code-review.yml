@@ -1,0 +1,20 @@
+name: Code Review with Claude
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize, labeled]
+    branches:
+      - develop
+  issue_comment:
+    types: [created]
+
+jobs:
+  call-claude-workflow:
+    if: |
+      (github.event_name == 'pull_request' && contains(fromJSON('["opened", "reopened", "ready_for_review", "synchronize"]'), github.event.action)) ||
+      (github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'code-review') ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude') && github.event.issue.pull_request != null) ||
+      (github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/cr-ignore') && github.event.issue.pull_request != null)
+    uses: redmatter/github-workflows/.github/workflows/code-review.yml@v1
+    secrets:
+      GH_SSH_KEY: ${{ secrets.GH_SSH_KEY }}
